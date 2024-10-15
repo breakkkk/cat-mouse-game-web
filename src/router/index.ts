@@ -1,22 +1,22 @@
+/*
+ * @Author: 南靳
+ * @Date: 2024-09-20 17:08:41
+ * @LastEditors: 南靳
+ * @LastEditTime: 2024-10-09 13:30:35
+ * @FilePath: /cat-mouse-game/src/router/index.ts
+ * @Description: 
+ */
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import MapContainer from '../views/game/mapContainer.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      name: 'game',
+      component: MapContainer
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
   ]
 })
 
