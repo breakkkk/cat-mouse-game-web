@@ -2,17 +2,16 @@
  * @Author: 南靳
  * @Date: 2024-10-09 13:44:38
  * @LastEditors: 南靳
- * @LastEditTime: 2024-10-09 14:20:43
+ * @LastEditTime: 2024-10-15 15:37:27
  * @FilePath: /cat-mouse-game/src/views/game/getAMapInstance.ts
  * @Description:
  */
-import { onMounted, onUnmounted, readonly, ref, type Ref } from 'vue';
+import { onMounted, onUnmounted, readonly, ref, type Ref } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 
 const map = ref<AMap.Map | null>(null)
-export default (cb?: (instance: AMap.Map ) => void): Ref<AMap.Map | null> => {
-
-  if(map.value){
+export default (cb?: (instance: AMap.Map) => void): Ref<AMap.Map | null> => {
+  if (map.value) {
     cb && cb(map.value)
     return map
   }
@@ -34,7 +33,7 @@ export default (cb?: (instance: AMap.Map ) => void): Ref<AMap.Map | null> => {
           center: [116.397428, 39.90923] // 初始化地图中心点位置
         })
 
-        if(map.value){
+        if (map.value) {
           cb && cb(map.value)
         }
       })

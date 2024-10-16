@@ -16,9 +16,11 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "element-plus": "^2.8.4",
+    "nanoid": "^5.0.7",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "xe-utils": "^3.5.31"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
