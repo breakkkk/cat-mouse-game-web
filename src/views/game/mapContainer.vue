@@ -2,7 +2,7 @@
  * @Author: 南靳
  * @Date: 2024-10-09 13:30:26
  * @LastEditors: 南靳
- * @LastEditTime: 2024-10-16 14:53:56
+ * @LastEditTime: 2024-10-17 17:07:10
  * @FilePath: /cat-mouse-game/src/views/game/mapContainer.vue
  * @Description: 
 -->
@@ -35,7 +35,7 @@ import { watch } from 'vue'
 import { useFencesPathStore, useGameStore, usePlayerPointStore } from '../../store/game'
 import { PiniaSingleton } from '../../plugins/pinia/index'
 import { DrawFencesStatusEnum, GameStatusEnum } from '@/cons/enums'
-import { generatorPlayer } from '../../helper/gameHelper'
+import { generatorEmptyPointPlayer, generatorPlayer } from '../../helper/gameHelper'
 import { generatorRandomPoint } from '../../helper/test'
 
 const drawStatus = ref<DrawFencesStatusEnum>(DrawFencesStatusEnum.None)
@@ -48,6 +48,7 @@ const { gameStatus, gameStart, gameEnd } = useGameStore(PiniaSingleton.getInstan
 
 const polyEditor = ref<AMap.PolygonEditor>()
 const pathDeep = ref<number>(0)
+const geoLocation = ref<AMap.Geolocation>()
 
 const markerMap = ref<{
   [k in string]: AMap.Marker
@@ -99,6 +100,16 @@ const map = getAMapInstance((map) => {
   // 加载插件
   map.plugin(['AMap.PolygonEditor'], () => {
     console.log('AMap.PolygonEditor 加载完毕')
+  })
+  geoLocation.value = new AMap.Geolocation({
+    enableHighAccuracy: true, // 是否使用高精度定位，默认:true
+    timeout: 10000, // 超过10秒后停止定位，默认：5s
+    showButton: true, // 显示定位按钮，默认：true
+    position: 'RB', // 定位按钮的停靠位置
+    offset: [10, 20], // 定位按钮与设置的停靠位置的偏移量，默认：[10, 20]
+    showMarker: true, // 定位成功后在定位到的位置显示点标记，默认：true
+    panToLocation: true, // 定位成功后将定位到的位置作为地图中心点，默认：true
+    zoomToAccuracy: true // 定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
   })
 })
 
@@ -173,20 +184,33 @@ const drawPlayerMarker = () => {
 }
 
 const startPick = () => {
-  gameInit()
+  // gameInit()
 
-  drawPlayerMarker()
+  playerJoin()
+  // drawPlayerMarker()
   // 测试模拟移动
   setInterval(() => {
     playerPointList.forEach((player) => {
-      if (polygon.value) {
-        updatePlayer({
-          ...player,
-          point: generatorRandomPoint(polygon.value)
+      // if (polygon.value) {
+      //   updatePlayer({
+      //     ...player,
+      //     point: generatorRandomPoint(polygon.value)
+      //   })
+      // }
+      if (geoLocation.value) {
+        console.log('获取定位')
+        geoLocation.value.getCurrentPosition((status, result) => {
+          console.log(status, result)
+          if (status == 'complete') {
+            updatePlayer({
+              ...player,
+              point: result.position
+            })
+          }
+          drawPlayerMarker()
         })
       }
     })
-    drawPlayerMarker()
   }, 1000 * 5)
 }
 
@@ -208,6 +232,11 @@ const generatorMarker = (player: IGame.Player) => {
     map.value?.add(marker)
     markerMap.value[player.id] = marker
   }
+}
+
+// 玩家加入
+const playerJoin = () => {
+  updatePlayer(generatorEmptyPointPlayer())
 }
 
 // #region 游戏测试
