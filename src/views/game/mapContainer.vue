@@ -7,7 +7,7 @@
  * @Description: 
 -->
 <template>
-  <div>
+  <div style="width: 100%; height: 100%">
     <div class="header">
       <ElButton @click="startDraw" v-if="drawStatus === DrawFencesStatusEnum.None"
         >开始绘制</ElButton
@@ -49,6 +49,8 @@ const { gameStatus, gameStart, gameEnd } = useGameStore(PiniaSingleton.getInstan
 const polyEditor = ref<AMap.PolygonEditor>()
 const pathDeep = ref<number>(0)
 const geoLocation = ref<AMap.Geolocation>()
+
+let timer: any = ''
 
 const markerMap = ref<{
   [k in string]: AMap.Marker
@@ -110,6 +112,14 @@ const map = getAMapInstance((map) => {
     showMarker: true, // 定位成功后在定位到的位置显示点标记，默认：true
     panToLocation: true, // 定位成功后将定位到的位置作为地图中心点，默认：true
     zoomToAccuracy: true // 定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+  })
+  geoLocation.value.getCurrentPosition((status, result) => {
+    console.log(status, result)
+    if (status == 'complete') {
+      map.setCenter(result.position)
+      playerJoin(result.position)
+      drawPlayerMarker()
+    }
   })
 })
 
@@ -184,19 +194,9 @@ const drawPlayerMarker = () => {
 }
 
 const startPick = () => {
-  // gameInit()
-
-  playerJoin()
-  // drawPlayerMarker()
-  // 测试模拟移动
-  setInterval(() => {
+  if (timer) return
+  timer = setInterval(() => {
     playerPointList.forEach((player) => {
-      // if (polygon.value) {
-      //   updatePlayer({
-      //     ...player,
-      //     point: generatorRandomPoint(polygon.value)
-      //   })
-      // }
       if (geoLocation.value) {
         console.log('获取定位')
         geoLocation.value.getCurrentPosition((status, result) => {
@@ -207,10 +207,14 @@ const startPick = () => {
               point: result.position
             })
           }
-          drawPlayerMarker()
+          if (status == 'error') {
+            clearInterval(timer)
+            timer = null
+          }
         })
       }
     })
+    drawPlayerMarker()
   }, 1000 * 5)
 }
 
@@ -235,8 +239,8 @@ const generatorMarker = (player: IGame.Player) => {
 }
 
 // 玩家加入
-const playerJoin = () => {
-  updatePlayer(generatorEmptyPointPlayer())
+const playerJoin = (point: AMap.LngLat) => {
+  updatePlayer(generatorEmptyPointPlayer(point))
 }
 
 // #region 游戏测试
@@ -253,7 +257,7 @@ const gameInit = () => {
   padding: 0px;
   margin: 0px;
   width: 100%;
-  height: 800px;
+  height: 100%;
 }
 .header {
   position: fixed;

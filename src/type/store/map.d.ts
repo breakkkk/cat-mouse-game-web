@@ -10,6 +10,7 @@
 namespace IGame {
   type Player = {
     id: string
+    isLocal: boolean
     playerType: PlayerRoleTypeEnum
     point: AMap.LngLat | null
   }

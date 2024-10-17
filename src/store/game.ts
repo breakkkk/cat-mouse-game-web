@@ -8,6 +8,7 @@
  */
 // import type { IGame } from '@/type/store/map'
 import { GameStatusEnum } from '@/cons/enums'
+import { reportCurrentPlayer } from '@/helper/gameHelper'
 import { defineStore } from 'pinia'
 import { readonly, ref } from 'vue'
 
@@ -46,10 +47,14 @@ export const usePlayerPointStore = defineStore('playerPoinitStoore', () => {
     } else {
       addPlayer(player)
     }
+    if (player.isLocal) {
+      reportCurrentPlayer(player)
+    }
   }
 
   // 删除玩家信息
   const removePlayer = () => {}
+
   return {
     playerPointList,
     updatePlayer

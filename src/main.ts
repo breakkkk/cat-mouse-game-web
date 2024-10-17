@@ -15,6 +15,12 @@ import ElementPlus from 'element-plus'
 import App from './App.vue'
 import router from './router'
 import { PiniaSingleton } from './plugins/pinia'
+import VConsole from 'vconsole'
+
+const vConsole = new VConsole()
+
+// 接下来即可照常使用 `console` 等方法
+console.log('Hello world')
 
 const app = createApp(App)
 
